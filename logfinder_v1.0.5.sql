@@ -1,8 +1,10 @@
-DECLARE @one_month_ago DATETIME
-DECLARE @one_month_ago_timestamp NUMERIC
+DECLARE @month_age DATETIME
+DECLARE @month_age_timestamp NUMERIC
 
-SET @one_month_ago = DATEADD(month, -1, GETDATE())
-SET @one_month_ago_timestamp = (SELECT DATEDIFF(s, '1970-01-01 00:00:00', @one_month_ago))
+-- SET @month_age = DATEADD(month, -1, GETDATE())
+-- SET @month_age = DATEADD(month, -2, GETDATE())
+SET @month_age = DATEADD(month, -3, GETDATE())
+SET @month_age_timestamp = (SELECT DATEDIFF(s, '1970-01-01 00:00:00', @month_age))
 
 
 /**
@@ -29,7 +31,7 @@ SELECT DISTINCT sUserId, sUsername, dateadd(s, lastNDateTime, '1970-01-01 00:00:
 FROM TB_USER as userTable
 INNER JOIN USER_LAST_NOT_ACCESS_ONE_MONTH as lastTable
 ON userTable.sUserId=lastTable.nUserId
-WHERE lastNDateTime < @one_month_ago_timestamp
+WHERE lastNDateTime < @month_age_timestamp
 
 /**
   * WHERE 조건으로 JOIN전에 WHERE문을 걸면 더 빠르지 않을까?
@@ -43,7 +45,7 @@ WHERE lastNDateTime < @one_month_ago_timestamp
 -- ;WITH oneMonthEvent AS (
 --     SELECT DISTINCT nUserID, max(DATEADD(s, nDateTime, '1970-01-01 00:00:00')) as lastAccessTime
 --     FROM TB_EVENT_LOG
---     WHERE nDateTime >= @one_month_ago_timestamp
+--     WHERE nDateTime >= @month_age_timestamp
 --         AND nUserID >0 
 --     GROUP BY nUserID
 -- ), inValidUsers AS(
@@ -59,7 +61,7 @@ WHERE lastNDateTime < @one_month_ago_timestamp
 -- ;WITH oneMonthUsers AS (
 --     SELECT DISTINCT nUserID
 --     FROM TB_EVENT_LOG
---     WHERE nDateTime >= @one_month_ago_timestamp
+--     WHERE nDateTime >= @month_age_timestamp
 --         AND nUserID >0
 -- )
 
@@ -78,7 +80,7 @@ WHERE lastNDateTime < @one_month_ago_timestamp
 --     AND nUserIdn NOT IN ( -- 최근 기간(한달)에 접속한 사용자 목록
 --         SELECT DISTINCT nUserID
 --         FROM TB_EVENT_LOG
---         WHERE nDateTime >= @one_month_ago_timestamp
+--         WHERE nDateTime >= @month_age_timestamp
 --             AND nUserID > 0
 --     )
 -- GROUP BY nUserIdn;
@@ -101,7 +103,7 @@ WHERE lastNDateTime < @one_month_ago_timestamp
 -- INNER JOIN USER_LAST_EVENT as lastTable
 -- ON userTable.nUserIdn=lastTable.nUserId
 -- WHERE nUserIdn > 0
--- AND lastAccessTime < @one_month_ago_timestamp;
+-- AND lastAccessTime < @month_age_timestamp;
 
 
 /**
